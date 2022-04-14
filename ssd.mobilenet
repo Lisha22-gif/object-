@@ -1,0 +1,100 @@
+node {
+  name: "normalized_input_image_tensor"
+  op: "Placeholder"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "shape"
+    value {
+      shape {
+        dim {
+          size: 1
+        }
+        dim {
+          size: 320
+        }
+        dim {
+          size: 320
+        }
+        dim {
+          size: 3
+        }
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV3/Conv/Conv2D"
+  op: "Conv2D"
+  input: "normalized_input_image_tensor"
+  input: "FeatureExtractor/MobilenetV3/Conv/weights"
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "explicit_paddings"
+    value {
+      list {
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV3/Conv/BatchNorm/FusedBatchNormV3"
+  op: "FusedBatchNormV3"
+  input: "FeatureExtractor/MobilenetV3/Conv/Conv2D"
+  input: "FeatureExtractor/MobilenetV3/Conv/BatchNorm/gamma"
+  input: "FeatureExtractor/MobilenetV3/Conv/BatchNorm/beta"
+  input: "FeatureExtractor/MobilenetV3/Conv/BatchNorm/moving_mean"
+  input: "FeatureExtractor/MobilenetV3/Conv/BatchNorm/moving_variance"
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "epsilon"
+    value {
+      f: 0.001
+    }
+  }
+  attr {
+    key: "U"
+    value {
+      type: DT_FLOAT
